@@ -1,0 +1,39 @@
+
+[
+  {
+    "time": "2026-11-18T10:00:00Z",
+    "user": "employee@contoso.example",
+    "ip": "192.0.2.10",
+    "status": "failure"
+  },
+  {
+    "time": "2026-11-18T10:01:00Z",
+    "user": "employee@contoso.example",
+    "ip": "192.0.2.10",
+    "status": "failure"
+  },
+  {
+    "time": "2026-11-18T10:02:00Z",
+    "user": "employee@contoso.example",
+    "ip": "192.0.2.10",
+    "status": "failure"
+  },
+  {
+    "time": "2026-11-18T10:03:00Z",
+    "user": "employee@contoso.example",
+    "ip": "192.0.2.10",
+    "status": "failure"
+  },
+  {
+    "time": "2026-11-18T10:04:00Z",
+    "user": "employee@contoso.example",
+    "ip": "192.0.2.10",
+    "status": "failure"
+  },
+  {
+    "time": "2026-11-18T10:05:00Z",
+    "user": "employee@contoso.example",
+    "ip": "192.0.2.10",
+    "status": "success"
+  }
+]
