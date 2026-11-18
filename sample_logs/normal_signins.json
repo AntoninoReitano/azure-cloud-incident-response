@@ -1,0 +1,21 @@
+
+[
+  {
+    "time": "2026-11-18T11:00:00Z",
+    "user": "employee2@contoso.example",
+    "ip": "198.51.100.15",
+    "status": "success"
+  },
+  {
+    "time": "2026-11-18T11:05:00Z",
+    "user": "employee3@contoso.example",
+    "ip": "198.51.100.25",
+    "status": "failure"
+  },
+  {
+    "time": "2026-11-18T11:06:00Z",
+    "user": "employee3@contoso.example",
+    "ip": "198.51.100.25",
+    "status": "success"
+  }
+]

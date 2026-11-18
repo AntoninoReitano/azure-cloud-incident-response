@@ -82,21 +82,94 @@ Pending analyst review.
         print(f"Incident report saved: {report_path}")
 
 
+
 # Step 4: Detect successful logins after repeated failures
-for log in logs:
-    if log["status"] == "success":
-        user = log["user"]
-        ip = log["ip"]
+from datetime import timedelta
 
-        key = (user, ip)
+# Sort events chronologically
+sorted_logs = sorted(
+    logs,
+    key=lambda log: datetime.fromisoformat(
+        log["time"].replace("Z", "+00:00")
+    )
+)
 
-        if failed_attempts[key] >= 5:
-            print("\nPOTENTIAL ACCOUNT COMPROMISE")
-            print("----------------------------")
-            print(f"User: {user}")
-            print(f"Source IP: {ip}")
-            print("Severity: CRITICAL")
-            print("Reason: Successful login associated")
-            print("with multiple failed attempts.")
-            print("Action: Investigate immediately.")
+for log in sorted_logs:
+    if log["status"] != "success":
+        continue
+
+    login_time = datetime.fromisoformat(
+        log["time"].replace("Z", "+00:00")
+    )
+
+    window_start = login_time - timedelta(minutes=10)
+
+    recent_failures = [
+        event for event in sorted_logs
+        if event["user"] == log["user"]
+        and event["ip"] == log["ip"]
+        and event["status"] == "failure"
+        and window_start <= datetime.fromisoformat(
+            event["time"].replace("Z", "+00:00")
+        ) < login_time
+    ]
+
+    if len(recent_failures) >= 5:
+        print("\nPOTENTIAL ACCOUNT COMPROMISE")
+        print("----------------------------")
+        print(f"User: {log['user']}")
+        print(f"Source IP: {log['ip']}")
+        print(f"Failed attempts: {len(recent_failures)}")
+        print("Time window: 10 minutes")
+        print("Severity: CRITICAL")
+        print("Action: Investigate immediately.")
+
+
+        # Generate a critical incident report
+        incident_id = login_time.strftime("INC-%Y%m%d-%H%M%S")
+
+        report = f"""# Cloud Security Incident Report
+
+## Incident Information
+- Incident ID: {incident_id}
+- Severity: CRITICAL
+- Status: Open - Investigation Required
+- Affected Account: {log['user']}
+- Source IP: {log['ip']}
+- Successful Login: {log['time']}
+- Failed Attempts: {len(recent_failures)}
+- Detection Window: 10 minutes
+
+## Incident Description
+Five or more failed login attempts were followed
+by a successful login from the same IP address
+within a 10-minute period.
+
+## Evidence
+- Authentication failures: {len(recent_failures)}
+- Successful authentication: 1
+- Source IP: {log['ip']}
+
+## Potential Impact
+Possible unauthorized account access.
+Actual compromise has not been confirmed.
+
+## Recommended Response
+1. Validate the login activity with the account owner.
+2. Review MFA and authentication records.
+3. Investigate additional suspicious account activity.
+4. Revoke active sessions if compromise is confirmed.
+5. Reset credentials if necessary.
+6. Document findings and resolution.
+
+## Investigation Status
+Pending security analyst review.
+"""
+
+        report_path = report_folder / f"{incident_id}.md"
+
+        with open(report_path, "w", encoding="utf-8") as file:
+            file.write(report)
+
+        print(f"Critical incident report saved: {report_path}")
 
